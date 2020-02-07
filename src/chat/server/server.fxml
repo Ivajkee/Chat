@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<VBox spacing="10.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="chat.server.Server">
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+    </padding>
+
+    <HBox alignment="CENTER_LEFT" fillHeight="false" spacing="5.0">
+        <Label text="IP"/>
+        <TextField fx:id="ipField" editable="false" prefWidth="100.0"/>
+        <Label text="Порт"/>
+        <Spinner fx:id="portField" editable="true" max="65535" min="49152" prefWidth="80.0"/>
+        <Label text="Имя" />
+        <TextField fx:id="nameField" prefWidth="100.0" text="Сервер"/>
+        <Button fx:id="connectButton" mnemonicParsing="false" onAction="#connect" text="Создать">
+            <graphic>
+                <ImageView>
+                    <Image url="@../files/img/ico/connect.png"/>
+                </ImageView>
+            </graphic>
+        </Button>
+        <Button fx:id="disconnectButton" disable="true" mnemonicParsing="false" onAction="#disconnect"
+                text="Отключиться">
+            <graphic>
+                <ImageView>
+                    <Image url="@../files/img/ico/disconnect.png"/>
+                </ImageView>
+            </graphic>
+        </Button>
+    </HBox>
+
+    <SplitPane dividerPositions="0.8" VBox.vgrow="ALWAYS">
+        <SplitPane dividerPositions="0.7" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0"
+                   AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+            </padding>
+            <AnchorPane minHeight="25.0">
+                <TextArea fx:id="inMessage" editable="false" promptText="Сообщений нет" wrapText="true"
+                          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                          AnchorPane.topAnchor="0.0"/>
+            </AnchorPane>
+            <AnchorPane minHeight="25.0">
+                <TextArea fx:id="outMessage" promptText="Введите сообщение" wrapText="true"
+                          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                          AnchorPane.topAnchor="0.0"/>
+            </AnchorPane>
+        </SplitPane>
+        <AnchorPane maxWidth="150.0" minWidth="0.0">
+            <TitledPane fx:id="paneListView" collapsible="false" text="Участники: 0" AnchorPane.bottomAnchor="0.0"
+                        AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <ListView fx:id="clientListView"/>
+                <graphic>
+                    <ImageView>
+                        <Image url="@../files/img/ico/group.png"/>
+                    </ImageView>
+                </graphic>
+            </TitledPane>
+        </AnchorPane>
+    </SplitPane>
+
+
+    <HBox alignment="CENTER_LEFT" fillHeight="false" spacing="5.0">
+        <Button mnemonicParsing="false" onAction="#sendMessage" text="Отправить">
+            <graphic>
+                <ImageView>
+                    <Image url="@../files/img/ico/tick.png"/>
+                </ImageView>
+            </graphic>
+        </Button>
+    </HBox>
+</VBox>
