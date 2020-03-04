@@ -11,11 +11,11 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        //Application.setUserAgentStylesheet(getClass().getResource("/chat/style.css").toExternalForm());
-        Parent root = FXMLLoader.load(getClass().getResource("startWindow.fxml"));
+        //setUserAgentStylesheet(getClass().getResource("/chat/files/css/style.css").toExternalForm());
+        Parent root = FXMLLoader.load(getClass().getResource("/chat/fxml/startWindow.fxml"));
         primaryStage.setTitle("Чат");
         primaryStage.setScene(new Scene(root, 800, 600));
-        primaryStage.getIcons().add(new Image(getClass().getResource("/chat/files/img/ico/chat.png").toExternalForm()));
+        primaryStage.getIcons().add(new Image(getClass().getResource("/files/img/ico/chat.png").toExternalForm()));
         primaryStage.show();
     }
 

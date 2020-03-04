@@ -1,5 +1,7 @@
 package chat.server;
 
+import chat.Connect;
+import chat.Connectable;
 import chat.utils.Msg;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -9,20 +11,16 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.*;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
-import java.util.concurrent.atomic.AtomicInteger;
 
-public class Server {
+public class Server implements Connectable {
     private ServerSocket serverSocket;
-    private LinkedList<ServerConnect> connectList;
+    private LinkedList<Connect> connectList;
     private ObservableList<String> clientListName;
     private volatile boolean serverReady;
-    private AtomicInteger atomicInt = new AtomicInteger();
+    private int i;
 
     @FXML
     private TextField ipField;
@@ -45,10 +43,11 @@ public class Server {
 
     @FXML
     private void initialize() {
+        Thread.currentThread().setName("Server");
         try (BufferedReader myIP = new BufferedReader(new InputStreamReader(new URL("http://checkip.amazonaws.com").openStream()))) {
             String ip = myIP.readLine();
             ipField.setText(ip);
-        } catch (IOException ioe) {
+        } catch (Exception e) {
             try {
                 ipField.setText(InetAddress.getLocalHost().getHostName());
             } catch (UnknownHostException uhe) {
@@ -58,16 +57,17 @@ public class Server {
         connectList = new LinkedList<>();
         clientListName = FXCollections.observableArrayList();
         clientListView.setItems(clientListName);
-        clientListView.setPlaceholder(new ImageView(getClass().getResource("/chat/files/img/bg/jdun.png").toExternalForm()));
+        clientListView.setPlaceholder(new ImageView(getClass().getResource("/files/img/bg/jdun.png").toExternalForm()));
     }
 
     @FXML
-    private void connect() {
+    public void connect() {
         connectButton.setDisable(true);
         disconnectButton.setDisable(false);
 
         try {
             serverSocket = new ServerSocket(portField.getValue());
+            //serverSocket.setSoTimeout(3000);
         } catch (Exception e) {
             systemOutMessage("Ошибка создания сервера");
             disconnect();
@@ -77,14 +77,14 @@ public class Server {
         systemOutMessage("Сервер запущен");
 
         Thread serverThread = new Thread(() -> {
-            while (serverSocket != null && serverReady) {
+            while (serverReady) {
                 try {
-                    Socket connectSocket = serverSocket.accept();
-                    ServerConnect connect = new ServerConnect(connectSocket, this);
-                    connectList.add(connect);
+                    Socket socket = serverSocket.accept();
+                    Connect connect = new Connect(socket, this);
                     connect.setDaemon(true);
                     connect.start();
-                } catch (IOException e) {
+                    connectList.add(connect);
+                } catch (Exception e) {
                     disconnect();
                 }
             }
@@ -94,45 +94,45 @@ public class Server {
     }
 
     @FXML
-    protected void disconnect() {
-        if (serverSocket != null && !serverSocket.isClosed()) {
+    public void disconnect() {
+        if (serverReady) {
             try {
                 sendMessage(getTime() + "[" + nameField.getText() + "] " + "Сервер остановлен");
                 serverSocket.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 systemOutMessage("Ошибка закрытия сервера");
             }
         }
+
         serverReady = false;
-        connectList.forEach(ServerConnect::disconnect);
+        connectList.forEach(Connect::disconnect);
         connectButton.setDisable(false);
         disconnectButton.setDisable(true);
     }
 
-    @FXML
-    private void sendMessage() {
-        sendMessage(getTime() + "[" + nameField.getText() + "] " + outMessage.getText());
-        outMessage.clear();
-    }
-
-    protected synchronized void deleteClient(ServerConnect connect) {
+    @Override
+    public synchronized void deleteConnect(Connect client) {
         Platform.runLater(() -> {
-            connectList.remove(connect);
-            clientListName.remove(connect.getNickName());
+            connectList.remove(client);
+            clientListName.remove(client.getNickName());
             paneListView.setText("Участники: " + connectList.size());
             sendMessage(Msg.ADD_ALL + String.join(",", clientListName));
-            sendMessage(getTime() + " " + connect.getNickName() + " вышел из чата");
+            sendMessage(getTime() + " " + client.getNickName() + " вышел из чата");
         });
     }
 
-    protected synchronized void readMessage(ServerConnect connect, String message) {
+    @FXML
+    private void sendMessage() {
+        if (serverReady && !outMessage.getText().trim().equals("")) {
+            sendMessage(getTime() + "[" + nameField.getText() + "] " + outMessage.getText());
+            outMessage.clear();
+        }
+    }
+
+    @Override
+    public synchronized void readMessage(Connect connect, String message) {
         if (message.contains(Msg.ADD_ONE)) {
-            if (clientListName.stream().noneMatch(name -> name.toLowerCase().equals(message.replace(Msg.ADD_ONE, "").toLowerCase()))
-                    && !message.replace(Msg.ADD_ONE, "").toLowerCase().equals(nameField.getText().toLowerCase())) {
-                connect.setNickName(message.replace(Msg.ADD_ONE, ""));
-            } else {
-                connect.setNickName(message.replace(Msg.ADD_ONE, "") + atomicInt.incrementAndGet());
-            }
+            connect.setNickName(checkNickName(message.replace(Msg.ADD_ONE, "")));
             Platform.runLater(() -> {
                 clientListName.add(connect.getNickName());
                 paneListView.setText("Участники: " + connectList.size());
@@ -144,8 +144,15 @@ public class Server {
         }
     }
 
+    private String checkNickName(String nickName) {
+        if (clientListName.contains(nickName) || nameField.getText().equals(nickName)) {
+            return checkNickName(nickName + (++i));
+        }
+        return nickName;
+    }
+
     @FXML
-    private synchronized void sendMessage(String message) {
+    public synchronized void sendMessage(String message) {
         if (message.contains(Msg.ADD_ALL)) {
             connectList.forEach(client -> client.sendMessage(message));
         } else {
@@ -154,12 +161,13 @@ public class Server {
         }
     }
 
-    protected void systemOutMessage(String message) {
+    @Override
+    public void systemOutMessage(String message) {
         inMessage.appendText(getTime() + " " + message + "\n");
     }
 
-    private String getTime() {
-        LocalTime ldt = LocalTime.now();
-        return "[" + ldt.format(DateTimeFormatter.ofPattern("HH:mm:ss")) + "]";
+    @Override
+    public void connectReady() {
+        System.out.println(Thread.activeCount());
     }
 }

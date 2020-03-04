@@ -5,7 +5,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <VBox spacing="10.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="chat.server.Server">
+      fx:controller="chat.server.Server" stylesheets="@../../files/css/style.css">
     <padding>
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
     </padding>
@@ -15,12 +15,12 @@
         <TextField fx:id="ipField" editable="false" prefWidth="100.0"/>
         <Label text="Порт"/>
         <Spinner fx:id="portField" editable="true" max="65535" min="49152" prefWidth="80.0"/>
-        <Label text="Имя" />
+        <Label text="Имя"/>
         <TextField fx:id="nameField" prefWidth="100.0" text="Сервер"/>
         <Button fx:id="connectButton" mnemonicParsing="false" onAction="#connect" text="Создать">
             <graphic>
                 <ImageView>
-                    <Image url="@../files/img/ico/connect.png"/>
+                    <Image url="@../../files/img/ico/connect.png"/>
                 </ImageView>
             </graphic>
         </Button>
@@ -28,7 +28,7 @@
                 text="Отключиться">
             <graphic>
                 <ImageView>
-                    <Image url="@../files/img/ico/disconnect.png"/>
+                    <Image url="@../../files/img/ico/disconnect.png"/>
                 </ImageView>
             </graphic>
         </Button>
@@ -57,7 +57,7 @@
                 <ListView fx:id="clientListView"/>
                 <graphic>
                     <ImageView>
-                        <Image url="@../files/img/ico/group.png"/>
+                        <Image url="@../../files/img/ico/group.png"/>
                     </ImageView>
                 </graphic>
             </TitledPane>
@@ -69,7 +69,7 @@
         <Button mnemonicParsing="false" onAction="#sendMessage" text="Отправить">
             <graphic>
                 <ImageView>
-                    <Image url="@../files/img/ico/tick.png"/>
+                    <Image url="@../../files/img/ico/tick.png"/>
                 </ImageView>
             </graphic>
         </Button>
