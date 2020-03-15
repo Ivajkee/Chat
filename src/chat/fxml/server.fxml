@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<VBox xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="chat.server.Server">
+    <MenuBar fx:id="menuBar">
+        <Menu id="menuFile" mnemonicParsing="false" onAction="#menuAction" text="Файл">
+            <!--            <MenuItem id="menuOpen" mnemonicParsing="false" text="Открыть" />-->
+            <!--            <SeparatorMenuItem id="menuLine" mnemonicParsing="false" />-->
+            <MenuItem id="menuExit" mnemonicParsing="false" text="Закрыть">
+                <graphic>
+                    <ImageView>
+                        <Image url="@../../files/img/ico/door_out.png"/>
+                    </ImageView>
+                </graphic>
+            </MenuItem>
+        </Menu>
+        <Menu id="menuSettings" mnemonicParsing="false" text="Настройки">
+            <Menu id="menuTheme" mnemonicParsing="false" onAction="#menuAction" text="Тема">
+                <graphic>
+                    <ImageView>
+                        <Image url="@../../files/img/ico/contrast.png"/>
+                    </ImageView>
+                </graphic>
+                <RadioMenuItem id="menuDefault" mnemonicParsing="false" selected="true" text="По умолчанию">
+                    <toggleGroup>
+                        <ToggleGroup fx:id="theme"/>
+                    </toggleGroup>
+                </RadioMenuItem>
+                <RadioMenuItem id="menuDark" mnemonicParsing="false" text="Темная" toggleGroup="$theme"/>
+            </Menu>
+            <Menu id="menuLang" mnemonicParsing="false" onAction="#menuAction" text="Язык">
+                <graphic>
+                    <ImageView>
+                        <Image url="@../../files/img/ico/language.png"/>
+                    </ImageView>
+                </graphic>
+                <RadioMenuItem id="menuRu" mnemonicParsing="false" selected="true" text="Русский">
+                    <graphic>
+                        <ImageView>
+                            <Image url="@../../files/img/flags/ru.png"/>
+                        </ImageView>
+                    </graphic>
+                    <toggleGroup>
+                        <ToggleGroup fx:id="lang"/>
+                    </toggleGroup>
+                </RadioMenuItem>
+                <RadioMenuItem id="menuEn" mnemonicParsing="false" text="Английский" toggleGroup="$lang">
+                    <graphic>
+                        <ImageView>
+                            <Image url="@../../files/img/flags/gb.png"/>
+                        </ImageView>
+                    </graphic>
+                </RadioMenuItem>
+                <RadioMenuItem id="menuDe" mnemonicParsing="false" text="Немецкий" toggleGroup="$lang">
+                    <graphic>
+                        <ImageView>
+                            <Image url="@../../files/img/flags/de.png"/>
+                        </ImageView>
+                    </graphic>
+                </RadioMenuItem>
+                <RadioMenuItem id="menuFr" mnemonicParsing="false" text="Французский" toggleGroup="$lang">
+                    <graphic>
+                        <ImageView>
+                            <Image url="@../../files/img/flags/fr.png"/>
+                        </ImageView>
+                    </graphic>
+                </RadioMenuItem>
+                <RadioMenuItem id="menuEs" mnemonicParsing="false" text="Испанский" toggleGroup="$lang">
+                    <graphic>
+                        <ImageView>
+                            <Image url="@../../files/img/flags/es.png"/>
+                        </ImageView>
+                    </graphic>
+                </RadioMenuItem>
+                <RadioMenuItem id="menuIt" mnemonicParsing="false" text="Итальянский" toggleGroup="$lang">
+                    <graphic>
+                        <ImageView>
+                            <Image url="@../../files/img/flags/it.png"/>
+                        </ImageView>
+                    </graphic>
+                </RadioMenuItem>
+            </Menu>
+            <Menu id="menuFont" mnemonicParsing="false" text="Шрифт">
+                <graphic>
+                    <ImageView>
+                        <Image url="@../../files/img/ico/font.png"/>
+                    </ImageView>
+                </graphic>
+                <Menu id="menuFamily" mnemonicParsing="false" onAction="#menuAction" text="Семейство">
+                    <graphic>
+                        <ImageView>
+                            <Image url="@../../files/img/ico/font_go.png"/>
+                        </ImageView>
+                    </graphic>
+                    <RadioMenuItem id="menuSystem" selected="true" style="-fx-font-family: 'System';" text="System"
+                                   userData="-fx-font-family: 'System';">
+                        <toggleGroup>
+                            <ToggleGroup fx:id="font"/>
+                        </toggleGroup>
+                    </RadioMenuItem>
+                    <RadioMenuItem id="menuArial" style="-fx-font-family: 'Arial';" text="Arial" toggleGroup="$font"
+                                   userData="-fx-font-family: 'Arial';"/>
+                    <RadioMenuItem id="menuArialBlack" style="-fx-font-family: 'Arial Black';" text="Arial Black"
+                                   toggleGroup="$font" userData="-fx-font-family: 'Arial Black';"/>
+                    <RadioMenuItem id="menuComicSans" style="-fx-font-family: 'Comic Sans MS';" text="Comic Sans MS"
+                                   toggleGroup="$font" userData="-fx-font-family: 'Comic Sans MS';"/>
+                    <RadioMenuItem id="menuCourier" style="-fx-font-family: 'Courier New';" text="Courier New"
+                                   toggleGroup="$font" userData="-fx-font-family: 'Courier New';"/>
+                    <RadioMenuItem id="menuTahoma" style="-fx-font-family: 'Tahoma';" text="Tahoma" toggleGroup="$font"
+                                   userData="-fx-font-family: 'Tahoma';"/>
+                    <RadioMenuItem id="menuTimes" style="-fx-font-family: 'Times New Roman';" text="Times New Roman"
+                                   toggleGroup="$font" userData="-fx-font-family: 'Times New Roman';"/>
+                    <RadioMenuItem id="menuVerdana" style="-fx-font-family: 'Verdana';" text="Verdana"
+                                   toggleGroup="$font" userData="-fx-font-family: 'Verdana';"/>
+                </Menu>
+                <Menu id="menuStyle" mnemonicParsing="false" onAction="#menuAction" text="Стиль">
+                    <graphic>
+                        <ImageView>
+                            <Image url="@../../files/img/ico/style.png"/>
+                        </ImageView>
+                    </graphic>
+                    <RadioMenuItem id="menuRegular" selected="true" text="Обычный" userData="-fx-font-style: normal;">
+                        <toggleGroup>
+                            <ToggleGroup fx:id="fontStyle"/>
+                        </toggleGroup>
+                    </RadioMenuItem>
+                    <RadioMenuItem id="menuBold" style="-fx-font-weight: bold;" text="Полужирный"
+                                   toggleGroup="$fontStyle" userData="-fx-font-weight: bold;"/>
+                    <RadioMenuItem id="menuItalic" style="-fx-font-style: italic;" text="Курсив"
+                                   toggleGroup="$fontStyle" userData="-fx-font-style: italic;"/>
+                    <RadioMenuItem id="menuBoldItalic" style="-fx-font-weight: bold; -fx-font-style: italic;"
+                                   text="Полужирный курсив" toggleGroup="$fontStyle"
+                                   userData="-fx-font-weight: bold; -fx-font-style: italic;"/>
+                </Menu>
+                <Menu id="menuSize" mnemonicParsing="false" onAction="#menuAction" text="Размер">
+                    <graphic>
+                        <ImageView>
+                            <Image url="@../../files/img/ico/text_smallcaps.png"/>
+                        </ImageView>
+                    </graphic>
+                    <RadioMenuItem id="menuFont10" text="10" userData="-fx-font-size: 10px;">
+                        <toggleGroup>
+                            <ToggleGroup fx:id="fontSize"/>
+                        </toggleGroup>
+                    </RadioMenuItem>
+                    <RadioMenuItem id="menuFont11" text="11" toggleGroup="$fontSize" userData="-fx-font-size: 11px;"/>
+                    <RadioMenuItem id="menuFont12" selected="true" text="12" toggleGroup="$fontSize"
+                                   userData="-fx-font-size: 12px;"/>
+                    <RadioMenuItem id="menuFont13" text="13" toggleGroup="$fontSize" userData="-fx-font-size: 13px;"/>
+                    <RadioMenuItem id="menuFont14" text="14" toggleGroup="$fontSize" userData="-fx-font-size: 14px;"/>
+                </Menu>
+                <Menu id="menuColor" mnemonicParsing="false" onAction="#menuAction" text="Цвет">
+                    <graphic>
+                        <ImageView>
+                            <Image url="@../../files/img/ico/color_swatch.png"/>
+                        </ImageView>
+                    </graphic>
+                    <RadioMenuItem id="menuBlack" selected="true" text="Черный" userData="-fx-text-fill: #333;">
+                        <graphic>
+                            <Rectangle height="15" stroke="BLACK" strokeWidth="0.5" width="15"/>
+                        </graphic>
+                        <toggleGroup>
+                            <ToggleGroup fx:id="fontColor"/>
+                        </toggleGroup>
+                    </RadioMenuItem>
+                    <RadioMenuItem id="menuRed" text="Красный" toggleGroup="$fontColor" userData="-fx-text-fill: red;">
+                        <graphic>
+                            <Rectangle fill="RED" height="15" stroke="BLACK" strokeWidth="0.5" width="15"/>
+                        </graphic>
+                    </RadioMenuItem>
+                    <RadioMenuItem id="menuGreen" text="Зеленый" toggleGroup="$fontColor"
+                                   userData="-fx-text-fill: green;">
+                        <graphic>
+                            <Rectangle fill="GREEN" height="15" stroke="BLACK" strokeWidth="0.5" width="15"/>
+                        </graphic>
+                    </RadioMenuItem>
+                    <RadioMenuItem id="menuBlue" text="Синий" toggleGroup="$fontColor" userData="-fx-text-fill: blue;">
+                        <graphic>
+                            <Rectangle fill="BLUE" height="15" stroke="BLACK" strokeWidth="0.5" width="15"/>
+                        </graphic>
+                    </RadioMenuItem>
+                    <RadioMenuItem id="menuWhite" text="Белый" toggleGroup="$fontColor"
+                                   userData="-fx-text-fill: white;">
+                        <graphic>
+                            <Rectangle fill="WHITE" height="15" stroke="BLACK" strokeWidth="0.5" width="15"/>
+                        </graphic>
+                    </RadioMenuItem>
+                </Menu>
+            </Menu>
+            <CheckMenuItem id="menuSave" fx:id="saveMessage" mnemonicParsing="false" selected="true" text="История">
+                <graphic>
+                    <ImageView>
+                        <Image url="@../../files/img/ico/disk.png"/>
+                    </ImageView>
+                </graphic>
+            </CheckMenuItem>
+        </Menu>
+        <Menu id="menuReference" mnemonicParsing="false" onAction="#menuAction" text="Справка">
+            <MenuItem id="menuGitHub" mnemonicParsing="false" text="Страница на GitHub">
+                <graphic>
+                    <ImageView>
+                        <Image url="@../../files/img/ico/world_link.png"/>
+                    </ImageView>
+                </graphic>
+            </MenuItem>
+            <MenuItem id="menuAbout" mnemonicParsing="false" text="О приложении">
+                <graphic>
+                    <ImageView>
+                        <Image url="@../../files/img/ico/information.png"/>
+                    </ImageView>
+                </graphic>
+            </MenuItem>
+        </Menu>
+    </MenuBar>
+    <VBox spacing="10.0" VBox.vgrow="ALWAYS">
+        <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+        </padding>
+        <HBox alignment="CENTER_LEFT" fillHeight="false" spacing="5.0">
+            <Label fx:id="labelIp" text="IP"/>
+            <TextField fx:id="ipField" prefWidth="100.0" text="127.0.0.1"/>
+            <Label fx:id="labelPort" text="Порт"/>
+            <Spinner fx:id="portField" editable="true" max="65535" min="49152" prefWidth="80.0"/>
+            <Label fx:id="labelName" text="Имя"/>
+            <TextField fx:id="nameField" prefWidth="100.0" text="Сервер"/>
+            <Button fx:id="connectBtn" mnemonicParsing="false" onAction="#connect" text="Подключиться">
+                <graphic>
+                    <ImageView>
+                        <Image url="@../../files/img/ico/connect.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button fx:id="disconnectBtn" disable="true" mnemonicParsing="false" onAction="#disconnect"
+                    text="Отключиться">
+                <graphic>
+                    <ImageView>
+                        <Image url="@../../files/img/ico/disconnect.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+        </HBox>
+
+        <SplitPane dividerPositions="0.8" VBox.vgrow="ALWAYS">
+            <SplitPane dividerPositions="0.7" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0"
+                       AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <padding>
+                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                </padding>
+                <AnchorPane minHeight="25.0">
+                    <TextArea fx:id="inMessage" editable="false" promptText="Сообщений нет" wrapText="true"
+                              AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                              AnchorPane.topAnchor="0.0"/>
+                </AnchorPane>
+                <AnchorPane minHeight="25.0">
+                    <TextArea fx:id="outMessage" promptText="Введите сообщение" wrapText="true"
+                              AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                              AnchorPane.topAnchor="0.0"/>
+                </AnchorPane>
+            </SplitPane>
+            <AnchorPane maxWidth="150.0" minWidth="0.0">
+                <TitledPane fx:id="paneListView" collapsible="false" text="В сети: 0" AnchorPane.bottomAnchor="0.0"
+                            AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <ListView fx:id="clientListView"/>
+                    <graphic>
+                        <ImageView>
+                            <Image url="@../../files/img/ico/group.png"/>
+                        </ImageView>
+                    </graphic>
+                </TitledPane>
+            </AnchorPane>
+        </SplitPane>
+        <HBox alignment="CENTER_LEFT" fillHeight="false" spacing="5.0">
+            <Button fx:id="sendBtn" mnemonicParsing="false" onAction="#sendMessage" text="Отправить">
+                <graphic>
+                    <ImageView>
+                        <Image url="@../../files/img/ico/tick.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+        </HBox>
+    </VBox>
+</VBox>

@@ -1,18 +1,16 @@
 package chat.utils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 
 public class Logger {
-    private Map<String, List<String>> logs;
-
-    public Logger() {
-        logs = new HashMap<>();
-    }
-
-    protected void saveMessage(String nickName, String message) {
-        logs.get(nickName).add(message);
+    public static void saveMessage(String message) {
+        try (FileWriter fileWriter = new FileWriter(LocalDate.now() + ".txt", StandardCharsets.UTF_8, true)) {
+            fileWriter.write(message + "\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

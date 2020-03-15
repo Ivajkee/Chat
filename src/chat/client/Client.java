@@ -9,33 +9,44 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
+import java.awt.*;
+import java.io.IOException;
 import java.net.Socket;
+import java.net.URI;
 
 public class Client implements Connectable {
+    private Connect connect;
     public MenuBar menuBar;
+    public CheckMenuItem saveMessage;
     public Label labelIp, labelPort, labelName;
     public TextField ipField, nameField;
     public TextArea inMessage, outMessage;
     public Spinner<Integer> portField;
-    public Button connectBtn, disconnectBtn, sendBtn;
-    public ToggleGroup lang, theme;
-    public Menu menuFile, menuSettings, menuTheme, menuLang, menuFont, menuReference;
-    public MenuItem menuOpen, menuSave, menuExit, menuFamily, menuStyle, menuSize, menuColor, menuGitHub, menuAbout, menuAutor;
-    public RadioMenuItem menuDefault, menuDark, menuRu, menuEn, menuDe, menuFr, menuEs, menuIt;
-    public ObservableList<String> clientListName;
-    private Connect connect;
-    private Stage stage;
-
     public TitledPane paneListView;
-    @FXML
-    private ListView<String> clientListView;
+    public ListView<String> clientListView;
+    public Button connectBtn, disconnectBtn, sendBtn;
+    public ToggleGroup lang, theme, font, fontStyle, fontSize, fontColor;
+    public ObservableList<String> clientListName;
+    public String onlineStr;
+    public Stage startWindow, stage;
 
-    public Client(Stage stage) {
+    public Client(Stage startWindow, Stage stage) {
         this.stage = stage;
+        this.startWindow = startWindow;
+        onlineStr = "В сети: ";
     }
 
 
@@ -44,7 +55,8 @@ public class Client implements Connectable {
         Thread.currentThread().setName("Client");
         clientListName = FXCollections.observableArrayList();
         clientListView.setItems(clientListName);
-        clientListView.setPlaceholder(new ImageView(getClass().getResource("/files/img/bg/jdun.png").toExternalForm()));
+        clientListView.setPlaceholder(new ImageView("/files/img/bg/jdun.png"));
+        stage.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, event -> disconnect());
     }
 
     @FXML
@@ -66,7 +78,7 @@ public class Client implements Connectable {
     }
 
     public void connectReady() {
-        sendMessage(Msg.ADD_ONE + connect.getNickName());
+        sendMessage(Msg.ADD + connect.getNickName());
     }
 
     @Override
@@ -75,9 +87,10 @@ public class Client implements Connectable {
             if (message.contains(Msg.ADD_ALL)) {
                 clientListName.clear();
                 clientListName.addAll(message.replace(Msg.ADD_ALL, "").split(","));
-                paneListView.setText(paneListView.getText() + clientListName.size());
+                paneListView.setText(onlineStr + clientListName.size());
             } else {
                 inMessage.appendText(message + "\n");
+                //if (saveMessage.isSelected()) Logger.saveMessage(message);
             }
         });
     }
@@ -90,7 +103,7 @@ public class Client implements Connectable {
     @FXML
     private void sendMessage() {
         if (connect != null && connect.isConnected() && !outMessage.getText().trim().equals("") && outMessage.getText().length() <= 200) {
-            sendMessage(outMessage.getText());
+            sendMessage(outMessage.getText().trim());
             outMessage.clear();
             outMessage.requestFocus();
         }
@@ -109,7 +122,7 @@ public class Client implements Connectable {
     private void clearState() {
         Platform.runLater(() -> {
             clientListName.clear();
-            paneListView.setText(paneListView.getText() + clientListName.size());
+            paneListView.setText(onlineStr + clientListName.size());
             connectBtn.setDisable(false);
             disconnectBtn.setDisable(true);
         });
@@ -128,25 +141,18 @@ public class Client implements Connectable {
     public void menuAction(ActionEvent actionEvent) {
         MenuItem item = (MenuItem) actionEvent.getTarget();
         switch (item.getId()) {
-            case "menuOpen":
-                System.out.println("Open");
-                break;
-            case "menuSave":
-                System.out.println("Save");
-                break;
             case "menuExit":
                 disconnect();
                 stage.close();
                 break;
             case "menuDefault":
-                System.out.println("Default");
+                setTheme("/files/css/default.css", 0);
                 break;
             case "menuDark":
-                System.out.println("Dark");
+                setTheme("/files/css/dark.css", 4);
                 break;
             case "menuRu":
                 Language.setRussian(this);
-                System.out.println(item.getId());
                 break;
             case "menuEn":
                 Language.setEnglish(this);
@@ -163,24 +169,79 @@ public class Client implements Connectable {
             case "menuIt":
                 Language.setItalian(this);
                 break;
-            case "menuFamily":
-                System.out.println("menuFamily");
-                break;
-            case "menuStyle":
-                System.out.println("menuStyle");
-                break;
-            case "menuSize":
-                System.out.println("menuSize");
+            case "menuSystem":
+            case "menuArial":
+            case "menuArialBlack":
+            case "menuComicSans":
+            case "menuCourier":
+            case "menuTahoma":
+            case "menuTimes":
+            case "menuVerdana":
+            case "menuRegular":
+            case "menuBold":
+            case "menuItalic":
+            case "menuBoldItalic":
+            case "menuFont10":
+            case "menuFont11":
+            case "menuFont12":
+            case "menuFont13":
+            case "menuFont14":
+            case "menuBlack":
+            case "menuRed":
+            case "menuGreen":
+            case "menuBlue":
+            case "menuWhite":
+                setFontStyle();
                 break;
             case "menuGitHub":
-                System.out.println("menuGitHub");
+                goToURL("https://github.com/Ivajkee/Chat");
                 break;
             case "menuAbout":
-                System.out.println("menuAbout");
+                showAbout();
                 break;
-            case "menuAutor":
-                System.out.println("menuAutor");
-                break;
+        }
+    }
+
+    private void setTheme(String url, int index) {
+        stage.getScene().setUserAgentStylesheet(url);
+        stage.show();
+        startWindow.getScene().setUserAgentStylesheet(url);
+        startWindow.show();
+        fontColor.selectToggle(fontColor.getToggles().get(index));
+        setFontStyle();
+    }
+
+    private void setFontStyle() {
+        inMessage.setStyle((String) font.getSelectedToggle().getUserData()
+                + fontStyle.getSelectedToggle().getUserData()
+                + fontSize.getSelectedToggle().getUserData()
+                + fontColor.getSelectedToggle().getUserData());
+    }
+
+    private void showAbout() {
+        PopupControl popupControl = new PopupControl();
+        popupControl.setAutoHide(true);
+        popupControl.setAutoFix(true);
+        popupControl.setHideOnEscape(true);
+        Parent root = null;
+        try {
+            root = FXMLLoader.load(getClass().getResource("/chat/fxml/about.fxml"));
+        } catch (IOException e) {
+            System.out.println("Не удалось загрузить файл");
+        }
+        assert root != null;
+        root.getChildrenUnmodifiable().get(3).setOnMouseClicked(e -> goToURL("skype:live:lamerinho_1?call"));
+        root.getChildrenUnmodifiable().get(4).setOnMouseClicked(e -> goToURL("https://vk.com/thx4game"));
+        root.getChildrenUnmodifiable().get(5).setOnMouseClicked(e -> goToURL("mailto:lamerinho@ya.ru"));
+        popupControl.getScene().setRoot(root);
+        popupControl.show(stage, stage.getX() + (stage.getWidth() / 2 - 150), stage.getY() + (stage.getHeight() / 2 - 150));
+    }
+
+    private void goToURL(String url) {
+        try {
+            Desktop.getDesktop().browse(new URI(url));
+        } catch (Exception e) {
+            System.out.println("Не удалось загрузить страницу");
         }
     }
 }
