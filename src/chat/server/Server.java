@@ -49,16 +49,17 @@ public class Server implements Connectable {
     public ObservableList<String> clientListName;
     public String onlineStr;
     public Stage startWindow, stage;
+    private PopupControl popupControl;
 
     public Server(Stage startWindow, Stage stage) {
         this.stage = stage;
         this.startWindow = startWindow;
+        Thread.currentThread().setName("Server");
         onlineStr = "В сети: ";
     }
 
     @FXML
     private void initialize() {
-        Thread.currentThread().setName("Server");
         try (BufferedReader myIP = new BufferedReader(new InputStreamReader(new URL("http://checkip.amazonaws.com").openStream()))) {
             String ip = myIP.readLine();
             ipField.setText(ip);
@@ -73,10 +74,30 @@ public class Server implements Connectable {
         clientListName = FXCollections.observableArrayList();
         clientListView.setItems(clientListName);
         clientListView.setPlaceholder(new ImageView("/files/img/bg/jdun.png"));
+
+        popupControl = new PopupControl();
+        popupControl.setAutoHide(true);
+        popupControl.setAutoFix(true);
+        popupControl.setHideOnEscape(true);
+        Parent root = null;
+        try {
+            root = FXMLLoader.load(getClass().getResource("/chat/fxml/about.fxml"));
+        } catch (IOException e) {
+            System.out.println("Не удалось загрузить файл");
+        }
+        assert root != null;
+        root.getChildrenUnmodifiable().get(4).setOnMouseClicked(e -> goToURL("skype:live:lamerinho_1?call"));
+        root.getChildrenUnmodifiable().get(5).setOnMouseClicked(e -> goToURL("https://vk.com/thx4game"));
+        root.getChildrenUnmodifiable().get(6).setOnMouseClicked(e -> goToURL("mailto:lamerinho@ya.ru"));
+        popupControl.getScene().setRoot(root);
+
         stage.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, event -> disconnect());
     }
 
-    @FXML
+    public void connectClick() {
+        connect();
+    }
+
     public void connect() {
         connectBtn.setDisable(true);
         disconnectBtn.setDisable(false);
@@ -108,7 +129,10 @@ public class Server implements Connectable {
         serverThread.start();
     }
 
-    @FXML
+    public void disconnectClick() {
+        disconnect();
+    }
+
     public void disconnect() {
         if (serverReady) {
             try {
@@ -139,8 +163,9 @@ public class Server implements Connectable {
     @FXML
     private void sendMessage() {
         if (serverReady && !outMessage.getText().trim().equals("")) {
-            sendMessage(getTime() + "[" + nameField.getText() + "] " + outMessage.getText());
+            sendMessage(getTime() + "[" + nameField.getText() + "] " + outMessage.getText().trim());
             outMessage.clear();
+            outMessage.requestFocus();
         }
     }
 
@@ -268,21 +293,6 @@ public class Server implements Connectable {
     }
 
     private void showAbout() {
-        PopupControl popupControl = new PopupControl();
-        popupControl.setAutoHide(true);
-        popupControl.setAutoFix(true);
-        popupControl.setHideOnEscape(true);
-        Parent root = null;
-        try {
-            root = FXMLLoader.load(getClass().getResource("/chat/fxml/about.fxml"));
-        } catch (IOException e) {
-            System.out.println("Не удалось загрузить файл");
-        }
-        assert root != null;
-        root.getChildrenUnmodifiable().get(3).setOnMouseClicked(e -> goToURL("skype:live:lamerinho_1?call"));
-        root.getChildrenUnmodifiable().get(4).setOnMouseClicked(e -> goToURL("https://vk.com/thx4game"));
-        root.getChildrenUnmodifiable().get(5).setOnMouseClicked(e -> goToURL("mailto:lamerinho@ya.ru"));
-        popupControl.getScene().setRoot(root);
         popupControl.show(stage, stage.getX() + (stage.getWidth() / 2 - 150), stage.getY() + (stage.getHeight() / 2 - 150));
     }
 

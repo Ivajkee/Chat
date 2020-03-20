@@ -228,14 +228,14 @@
             <Spinner fx:id="portField" editable="true" max="65535" min="49152" prefWidth="80.0"/>
             <Label fx:id="labelName" text="Имя"/>
             <TextField fx:id="nameField" prefWidth="100.0" text="Сервер"/>
-            <Button fx:id="connectBtn" mnemonicParsing="false" onAction="#connect" text="Подключиться">
+            <Button fx:id="connectBtn" mnemonicParsing="false" onAction="#connectClick" text="Подключиться">
                 <graphic>
                     <ImageView>
                         <Image url="@../../files/img/ico/connect.png"/>
                     </ImageView>
                 </graphic>
             </Button>
-            <Button fx:id="disconnectBtn" disable="true" mnemonicParsing="false" onAction="#disconnect"
+            <Button fx:id="disconnectBtn" disable="true" mnemonicParsing="false" onAction="#disconnectClick"
                     text="Отключиться">
                 <graphic>
                     <ImageView>
