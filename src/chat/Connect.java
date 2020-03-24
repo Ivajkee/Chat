@@ -7,11 +7,11 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
 public class Connect extends Thread {
-    private Socket socket;
+    private final Socket socket;
     private BufferedReader in;
     private BufferedWriter out;
-    private Connectable connect;
-    private User user;
+    private final Connectable connect;
+    private final User user;
     private boolean isConnect;
 
     public Connect(Socket socket, Connectable connect) {

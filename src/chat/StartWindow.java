@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class StartWindow {
-    Stage startWindow;
+    private Stage startWindow;
 
     public StartWindow(Stage stage) {
         startWindow = stage;

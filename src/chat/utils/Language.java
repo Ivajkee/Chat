@@ -109,7 +109,7 @@ public class Language {
 
         server.stage.setTitle(bundle.getString("serverTitle"));
         server.startWindow.setTitle(bundle.getString("chatTitle"));
-        server.connectBtn.setText(bundle.getString("connectBtn"));
+        server.connectBtn.setText(bundle.getString("createServer"));
         server.disconnectBtn.setText(bundle.getString("disconnectBtn"));
         server.sendBtn.setText(bundle.getString("sendBtn"));
         server.labelPort.setText(bundle.getString("labelPort"));

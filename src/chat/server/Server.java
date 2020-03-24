@@ -20,6 +20,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -48,7 +49,8 @@ public class Server implements Connectable {
     public ToggleGroup lang, theme, font, fontStyle, fontSize, fontColor;
     public ObservableList<String> clientListName;
     public String onlineStr;
-    public Stage startWindow, stage;
+    public final Stage startWindow;
+    public final Stage stage;
     private PopupControl popupControl;
 
     public Server(Stage startWindow, Stage stage) {
@@ -58,49 +60,40 @@ public class Server implements Connectable {
         onlineStr = "В сети: ";
     }
 
-    @FXML
-    private void initialize() {
-        try (BufferedReader myIP = new BufferedReader(new InputStreamReader(new URL("http://checkip.amazonaws.com").openStream()))) {
-            String ip = myIP.readLine();
-            ipField.setText(ip);
-        } catch (Exception e) {
-            try {
-                ipField.setText(InetAddress.getLocalHost().getHostName());
-            } catch (UnknownHostException uhe) {
-                ipField.setText("хз");
+    public void initialize() {
+        Platform.runLater(() -> {
+            try (BufferedReader myIP = new BufferedReader(new InputStreamReader(new URL("http://checkip.amazonaws.com").openStream()))) {
+                String ip = myIP.readLine();
+                ipField.setText(ip);
+            } catch (Exception e) {
+                try {
+                    ipField.setText(InetAddress.getLocalHost().getHostName());
+                } catch (UnknownHostException uhe) {
+                    ipField.setText(":(");
+                }
             }
-        }
+        });
         connectList = new LinkedList<>();
         clientListName = FXCollections.observableArrayList();
         clientListView.setItems(clientListName);
         clientListView.setPlaceholder(new ImageView("/files/img/bg/jdun.png"));
-
-        popupControl = new PopupControl();
-        popupControl.setAutoHide(true);
-        popupControl.setAutoFix(true);
-        popupControl.setHideOnEscape(true);
-        Parent root = null;
-        try {
-            root = FXMLLoader.load(getClass().getResource("/chat/fxml/about.fxml"));
-        } catch (IOException e) {
-            System.out.println("Не удалось загрузить файл");
-        }
-        assert root != null;
-        root.getChildrenUnmodifiable().get(4).setOnMouseClicked(e -> goToURL("skype:live:lamerinho_1?call"));
-        root.getChildrenUnmodifiable().get(5).setOnMouseClicked(e -> goToURL("https://vk.com/thx4game"));
-        root.getChildrenUnmodifiable().get(6).setOnMouseClicked(e -> goToURL("mailto:lamerinho@ya.ru"));
-        popupControl.getScene().setRoot(root);
-
         stage.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, event -> disconnect());
+        outMessage.setOnKeyPressed(keyEvent -> {
+            if (keyEvent.getCode() == KeyCode.ENTER) {
+                sendMessage();
+            }
+        });
+        createAbout();
     }
 
     public void connectClick() {
+        outMessage.requestFocus();
         connect();
     }
 
     public void connect() {
-        connectBtn.setDisable(true);
         disconnectBtn.setDisable(false);
+        disableControls(true);
 
         try {
             serverSocket = new ServerSocket(portField.getValue());
@@ -145,8 +138,8 @@ public class Server implements Connectable {
 
         serverReady = false;
         connectList.forEach(Connect::disconnect);
-        connectBtn.setDisable(false);
         disconnectBtn.setDisable(true);
+        disableControls(false);
     }
 
     @Override
@@ -162,7 +155,7 @@ public class Server implements Connectable {
 
     @FXML
     private void sendMessage() {
-        if (serverReady && !outMessage.getText().trim().equals("")) {
+        if (serverReady && !outMessage.getText().trim().equals("") && outMessage.getText().trim().length() <= 200) {
             sendMessage(getTime() + "[" + nameField.getText() + "] " + outMessage.getText().trim());
             outMessage.clear();
             outMessage.requestFocus();
@@ -292,6 +285,24 @@ public class Server implements Connectable {
                 + fontColor.getSelectedToggle().getUserData());
     }
 
+    private void createAbout() {
+        popupControl = new PopupControl();
+        popupControl.setAutoHide(true);
+        popupControl.setAutoFix(true);
+        popupControl.setHideOnEscape(true);
+        Parent root = null;
+        try {
+            root = FXMLLoader.load(getClass().getResource("/chat/fxml/about.fxml"));
+        } catch (IOException e) {
+            System.out.println("Не удалось загрузить файл");
+        }
+        assert root != null;
+        root.getChildrenUnmodifiable().get(4).setOnMouseClicked(e -> goToURL("skype:live:lamerinho_1?call"));
+        root.getChildrenUnmodifiable().get(5).setOnMouseClicked(e -> goToURL("https://vk.com/thx4game"));
+        root.getChildrenUnmodifiable().get(6).setOnMouseClicked(e -> goToURL("mailto:lamerinho@ya.ru"));
+        popupControl.getScene().setRoot(root);
+    }
+
     private void showAbout() {
         popupControl.show(stage, stage.getX() + (stage.getWidth() / 2 - 150), stage.getY() + (stage.getHeight() / 2 - 150));
     }
@@ -302,5 +313,13 @@ public class Server implements Connectable {
         } catch (Exception e) {
             System.out.println("Не удалось загрузить страницу");
         }
+    }
+
+    private void disableControls(boolean disabled) {
+        labelIp.setDisable(disabled);
+        labelPort.setDisable(disabled);
+        ipField.setDisable(disabled);
+        portField.setDisable(disabled);
+        connectBtn.setDisable(disabled);
     }
 }

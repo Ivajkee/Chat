@@ -20,6 +20,7 @@ public class Main extends Application {
         scene.setUserAgentStylesheet("/files/css/default.css");
         stage.setScene(scene);
         stage.getIcons().add(new Image("/files/img/ico/chat.png"));
+        stage.setResizable(false);
         stage.show();
     }
 
