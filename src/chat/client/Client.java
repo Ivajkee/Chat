@@ -56,7 +56,7 @@ public class Client implements Connectable {
     public void initialize() {
         clientListName = FXCollections.observableArrayList();
         clientListView.setItems(clientListName);
-        clientListView.setPlaceholder(new ImageView("\\files\\img\\bg\\jdun.png"));
+        clientListView.setPlaceholder(new ImageView("/files/img/bg/jdun.png"));
         stage.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, event -> disconnect());
         outMessage.setOnKeyPressed(keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ENTER) {
